@@ -2,3 +2,6 @@
 /bin/
 /appsettings.Development.json
 /.idea/.idea.TodoApi.dir/.idea/
+/obj/
+/Migrations/
+
