@@ -4,15 +4,20 @@ namespace TodoApi.Models
 {
     public class TodoItem
     {
+        public TodoItem(string text)
+        {
+            Text = text;
+        }
+
         public long Id { get; set; }
         [DataType(DataType.Text)] public string Text { get; set; }
-        public Status ItemStatus { get; set; }
+        public ItemStatus Status { get; set; }
 
-        public enum Status
+        public enum ItemStatus
         {
-            todo,
-            doing,
-            done
+            Todo,
+            Doing,
+            Done
         }
     }
 }
