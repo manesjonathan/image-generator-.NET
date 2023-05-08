@@ -85,7 +85,7 @@ internal abstract class Program
             options.AddPolicy(name: "MyPolicy",
                 policy =>
                 {
-                    policy.WithOrigins("http://10.22.14.171:19006")
+                    policy.WithOrigins("*")
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
