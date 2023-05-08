@@ -67,7 +67,6 @@ internal abstract class Program
 
         builder.Services.AddDbContext<TodoContext>();
         builder.Services.AddScoped<TokenService, TokenService>();
-
         builder.Services
             .AddIdentityCore<IdentityUser>(options =>
             {
@@ -80,6 +79,17 @@ internal abstract class Program
                 options.Password.RequireLowercase = false;
             })
             .AddEntityFrameworkStores<TodoContext>();
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: "MyPolicy",
+                policy =>
+                {
+                    policy.WithOrigins("http://10.22.14.171:19006")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+        });
 
         var app = builder.Build();
 
@@ -98,6 +108,7 @@ internal abstract class Program
         app.MapControllers();
 
         new StripeService().Test();
+        app.UseCors("MyPolicy");
 
         app.Run();
     }
