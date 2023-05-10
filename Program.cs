@@ -91,6 +91,14 @@ internal abstract class Program
                 });
         });
 
+        builder.Services.AddAuthentication()
+            .AddGoogle(options =>
+            {
+                options.CallbackPath = "/Auth/register";
+                options.ClientId = builder.Configuration.GetConnectionString("ClientId") ?? string.Empty;
+                options.ClientSecret = builder.Configuration.GetConnectionString("ClientSecret") ?? string.Empty;
+            });
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

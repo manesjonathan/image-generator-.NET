@@ -81,4 +81,12 @@ public class AuthController : ControllerBase
             Token = accessToken,
         });
     }
+
+    [HttpPost]
+    [Route("google-signin")]
+    public async Task<IActionResult> GoogleSignin()
+    {
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
 }
