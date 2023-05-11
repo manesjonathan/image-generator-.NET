@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2.Responses;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using TodoApi.Data;
 using TodoApi.Services;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace TodoApi.Controllers;
 
@@ -70,7 +74,9 @@ public class AuthController : ControllerBase
 
         var userInDb = _context.Users.FirstOrDefault(u => u.Email == request.Email);
         if (userInDb is null)
+        {
             return Unauthorized();
+        }
 
         var accessToken = _tokenService.CreateToken(userInDb);
         await _context.SaveChangesAsync();
@@ -84,9 +90,27 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("google-signin")]
-    public async Task<IActionResult> GoogleSignin()
+    public async Task<ActionResult<string>> AuthenticateWithGoogle([FromBody] TokenResponse model)
     {
-        await _context.SaveChangesAsync();
-        return Ok();
+        try
+        {
+            var builder = WebApplication.CreateBuilder();
+
+            var accessToken = model;
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new List<string>() { builder.Configuration["Google:ClientId"] },
+                HostedDomain = builder.Configuration["Google:HostedDomain"]
+            };
+
+            GoogleJsonWebSignature.Payload payload =
+                await GoogleJsonWebSignature.ValidateAsync(accessToken.IdToken, settings);
+
+            return Ok("Authenticated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
