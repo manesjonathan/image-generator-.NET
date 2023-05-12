@@ -93,22 +93,22 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var result = await _userManager.CreateAsync(
-            new IdentityUser { UserName = request.Email, Email = request.Email },
-            request.Id);
-        if (!result.Succeeded)
-        {
-            return BadRequest();
-        }
-
         var userInDb = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+
         if (userInDb is null)
         {
-            return Unauthorized();
+            var result = await _userManager.CreateAsync(
+                new IdentityUser { UserName = request.Email, Email = request.Email },
+                request.Id);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest();
+            }
         }
 
-
-        var accessToken = _tokenService.CreateToken(userInDb);
+        var userSaved = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+        var accessToken = _tokenService.CreateToken(userSaved ?? throw new InvalidOperationException());
         await _context.SaveChangesAsync();
 
         return Ok(new AuthResponse

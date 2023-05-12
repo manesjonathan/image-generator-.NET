@@ -44,11 +44,6 @@ builder.Services.AddSwaggerGen(option =>
 });
 builder.Services
     .AddAuthentication()
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration.GetConnectionString("ClientId") ?? string.Empty;
-        options.ClientSecret = builder.Configuration.GetConnectionString("ClientSecret") ?? string.Empty;
-    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters()
