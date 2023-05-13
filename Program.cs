@@ -1,12 +1,9 @@
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ImageGeneratorApi.Data;
+using ImageGeneratorApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using TodoApi.Data;
-using TodoApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,7 +58,7 @@ builder.Services
         };
     });
 
-builder.Services.AddDbContext<TodoContext>();
+builder.Services.AddDbContext<ImageGeneratorApiContext>();
 builder.Services.AddScoped<TokenService, TokenService>();
 builder.Services
     .AddIdentityCore<IdentityUser>(options =>
@@ -74,7 +71,7 @@ builder.Services
         options.Password.RequireUppercase = false;
         options.Password.RequireLowercase = false;
     })
-    .AddEntityFrameworkStores<TodoContext>();
+    .AddEntityFrameworkStores<ImageGeneratorApiContext>();
 
 builder.Services.AddCors(options =>
 {

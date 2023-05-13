@@ -1,6 +1,6 @@
 ﻿using Stripe;
 
-namespace TodoApi.Services;
+namespace ImageGeneratorApi.Services;
 
 public class StripeService
 {

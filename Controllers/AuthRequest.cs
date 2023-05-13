@@ -1,7 +1,15 @@
-﻿namespace TodoApi.Controllers;
+﻿using Microsoft.Build.Framework;
+
+namespace ImageGeneratorApi.Controllers;
 
 public class AuthRequest
 {
-    public string Email { get; set; } = null!;
-    public string Password { get; set; } = null!;
+    public AuthRequest(string email, string password)
+    {
+        Email = email;
+        Password = password;
+    }
+
+    [Required] public string Email { get; set; }
+    [Required] public string Password { get; set; }
 }

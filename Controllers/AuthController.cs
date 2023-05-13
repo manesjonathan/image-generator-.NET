@@ -1,50 +1,43 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ImageGeneratorApi.Data;
+using ImageGeneratorApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using TodoApi.Data;
-using TodoApi.Services;
 
-namespace TodoApi.Controllers;
+namespace ImageGeneratorApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly TodoContext _context;
+    private readonly ImageGeneratorApiContext _context;
     private readonly TokenService _tokenService;
+    private readonly UserService _userService;
 
-    public AuthController(UserManager<IdentityUser> userManager, TodoContext context, TokenService tokenService)
+    public AuthController(ImageGeneratorApiContext context, TokenService tokenService, UserService userService)
     {
-        _userManager = userManager;
         _context = context;
         _tokenService = tokenService;
+        _userService = userService;
     }
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register(RegistrationRequest request)
+    public async Task<IActionResult> Register([FromBody] RegistrationRequest request)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var result = await _userManager.CreateAsync(
-            new IdentityUser { UserName = request.Username, Email = request.Email },
-            request.Password
-        );
-        if (result.Succeeded)
+        if (_userService.IsExistingUser(request.Email))
         {
-            request.Password = "";
-            return CreatedAtAction(nameof(Register), new { email = request.Email }, request);
+            return BadRequest("User already exists");
         }
 
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(error.Code, error.Description);
-        }
+        var user = _userService.CreateUser(request.Email, request.Password);
+        var accessToken = _tokenService.CreateToken(user);
 
-        return BadRequest(ModelState);
+        await _context.SaveChangesAsync();
+        return Ok(new AuthResponse(user.Email, user.Name, accessToken));
     }
 
     [HttpPost]
@@ -56,32 +49,11 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var managedUser = await _userManager.FindByEmailAsync(request.Email);
-        if (managedUser == null)
-        {
-            return BadRequest("Bad credentials");
-        }
+        var verifiedUser = _userService.VerifyUser(request.Email, request.Password);
+        var accessToken = _tokenService.CreateToken(verifiedUser);
 
-        var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, request.Password);
-        if (!isPasswordValid)
-        {
-            return BadRequest("Bad credentials");
-        }
-
-        var userInDb = _context.Users.FirstOrDefault(u => u.Email == request.Email);
-        if (userInDb is null)
-        {
-            return Unauthorized();
-        }
-
-        var accessToken = _tokenService.CreateToken(userInDb);
         await _context.SaveChangesAsync();
-        return Ok(new AuthResponse
-        {
-            Username = userInDb.UserName,
-            Email = userInDb.Email,
-            Token = accessToken,
-        });
+        return Ok(new AuthResponse(verifiedUser.Email, verifiedUser.Name, accessToken));
     }
 
     [HttpPost]
@@ -93,30 +65,16 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var userInDb = _context.Users.FirstOrDefault(u => u.Email == request.Email);
-
-        if (userInDb is null)
+        if (_userService.IsExistingUser(request.Email))
         {
-            var result = await _userManager.CreateAsync(
-                new IdentityUser { UserName = request.Email, Email = request.Email },
-                request.Id);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest();
-            }
+            var user = _userService.GetUserByEmailAndGoogleId(request.Email, request.Id);
+            var token = _tokenService.CreateToken(user);
+            return Ok(new AuthResponse(user.Email, user.Name, token));
         }
 
-        var userSaved = _context.Users.FirstOrDefault(u => u.Email == request.Email);
-        var accessToken = _tokenService.CreateToken(userSaved ?? throw new InvalidOperationException());
+        var newUser = _userService.CreateGoogleUser(request.Email, request.Id, request.Name);
+        var accessToken = _tokenService.CreateToken(newUser);
         await _context.SaveChangesAsync();
-
-        return Ok(new AuthResponse
-            {
-                Username = request.Email,
-                Email = request.Email,
-                Token = accessToken,
-            }
-        );
+        return Ok(new AuthResponse(newUser.Email, newUser.Name, accessToken));
     }
 }

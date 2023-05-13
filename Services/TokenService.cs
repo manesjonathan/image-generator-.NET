@@ -2,16 +2,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
+using ImageGeneratorApi.Models;
 using Microsoft.IdentityModel.Tokens;
 
-namespace TodoApi.Services;
+namespace ImageGeneratorApi.Services;
 
-public class TokenService
+public abstract class TokenService
 {
     private const int ExpirationMinutes = 30;
 
-    public string CreateToken(IdentityUser user)
+    public string CreateToken(User user)
     {
         var expiration = DateTime.UtcNow.AddMinutes(ExpirationMinutes);
         var token = CreateJwtToken(
@@ -23,7 +23,7 @@ public class TokenService
         return tokenHandler.WriteToken(token);
     }
 
-    private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials,
+    private static JwtSecurityToken CreateJwtToken(IEnumerable<Claim> claims, SigningCredentials credentials,
         DateTime expiration) =>
         new(
             "apiWithAuthBackend",
@@ -33,7 +33,7 @@ public class TokenService
             signingCredentials: credentials
         );
 
-    private List<Claim> CreateClaims(IdentityUser user)
+    private List<Claim> CreateClaims(User user)
     {
         try
         {
@@ -42,8 +42,8 @@ public class TokenService
                 new Claim(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Email, user.Email)
             };
             return claims;
@@ -55,7 +55,7 @@ public class TokenService
         }
     }
 
-    private SigningCredentials CreateSigningCredentials()
+    private static SigningCredentials CreateSigningCredentials()
     {
         var builder = WebApplication.CreateBuilder();
         return new SigningCredentials(

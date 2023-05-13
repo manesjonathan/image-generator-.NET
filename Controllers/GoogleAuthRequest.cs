@@ -1,9 +1,17 @@
-﻿namespace TodoApi.Controllers;
+﻿using Microsoft.Build.Framework;
+
+namespace ImageGeneratorApi.Controllers;
 
 public class GoogleAuthRequest
 {
-    public string Id { get; set; }
-    public string Email { get; set; }
-    public string Name { get; set; }
-    public string Locale { get; set; }
+    public GoogleAuthRequest(string id, string email, string name)
+    {
+        Id = id;
+        Email = email;
+        Name = name;
+    }
+
+    [Required] public string Id { get; set; }
+    [Required] public string Email { get; set; }
+    [Required] public string Name { get; set; }
 }

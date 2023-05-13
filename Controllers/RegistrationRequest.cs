@@ -1,10 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Build.Framework;
 
-namespace TodoApi.Controllers;
+namespace ImageGeneratorApi.Controllers;
 
 public class RegistrationRequest
 {
-    [Required] public string Email { get; set; } = null!;
-    [Required] public string Username { get; set; } = null!;
-    [Required] public string Password { get; set; } = null!;
+    public RegistrationRequest(string email, string password)
+    {
+        Email = email;
+        Password = password;
+    }
+
+    [Required] public string Email { get; set; }
+    [Required] public string Password { get; set; }
 }
