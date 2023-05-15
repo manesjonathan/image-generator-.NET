@@ -23,7 +23,7 @@ namespace ImageGeneratorApi.Services
 
         public User CreateGoogleUser(string email, string googleId, string name)
         {
-            var entityEntry = _context.Users.Add(new User(googleId, email, "", name, true, 2));
+            var entityEntry = _context.Users.Add(new User(googleId, email, "", name, true, 1));
             _context.SaveChanges();
 
             return entityEntry.Entity;
