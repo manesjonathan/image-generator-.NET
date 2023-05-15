@@ -1,28 +1,15 @@
 ﻿using ImageGeneratorApi.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ImageGeneratorApi.Data;
-
-public class ImageGeneratorApiContext : IdentityUserContext<IdentityUser>
+namespace ImageGeneratorApi.Data
 {
-    public ImageGeneratorApiContext(DbContextOptions<ImageGeneratorApiContext> options, DbSet<User> users)
-        : base(options)
+    public class ImageGeneratorApiContext : DbContext
     {
-        Users = users;
-    }
+        public ImageGeneratorApiContext(DbContextOptions<ImageGeneratorApiContext> options)
+            : base(options)
+        {
+        }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    {
-        var builder = WebApplication.CreateBuilder();
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseURL"));
+        public DbSet<User> Users { get; set; } = null!;
     }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-    }
-
-    public new DbSet<User> Users { get; set; }
 }

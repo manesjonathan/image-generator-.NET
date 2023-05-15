@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ImageGeneratorApi.Services;
 
-public abstract class TokenService
+public class TokenService
 {
     private const int ExpirationMinutes = 30;
 
@@ -23,7 +23,7 @@ public abstract class TokenService
         return tokenHandler.WriteToken(token);
     }
 
-    private static JwtSecurityToken CreateJwtToken(IEnumerable<Claim> claims, SigningCredentials credentials,
+    private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials,
         DateTime expiration) =>
         new(
             "apiWithAuthBackend",
@@ -55,7 +55,7 @@ public abstract class TokenService
         }
     }
 
-    private static SigningCredentials CreateSigningCredentials()
+    private SigningCredentials CreateSigningCredentials()
     {
         var builder = WebApplication.CreateBuilder();
         return new SigningCredentials(

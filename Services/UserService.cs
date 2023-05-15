@@ -1,61 +1,68 @@
 using ImageGeneratorApi.Data;
 using ImageGeneratorApi.Models;
 
-namespace ImageGeneratorApi.Services;
-
-public class UserService
+namespace ImageGeneratorApi.Services
 {
-    private readonly ImageGeneratorApiContext _context;
-
-    public UserService(ImageGeneratorApiContext context)
+    public class UserService
     {
-        _context = context;
-    }
+        private readonly ImageGeneratorApiContext _context;
 
-    public User CreateUser(string email, string password)
-    {
-        //hash password
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-        var entityEntry = _context.Users.Add(new User("", email, hashedPassword, "User", true, 2));
-        return entityEntry.Entity;
-    }
-
-    public User CreateGoogleUser(string email, string googleId, string name)
-    {
-        var entityEntry = _context.Users.Add(new User(googleId, email, "", name, true, 2));
-        return entityEntry.Entity;
-    }
-
-    public bool IsExistingUser(string email)
-    {
-        return _context.Users.Any(u => u.Email == email);
-    }
-
-    public User VerifyUser(string email, string password)
-    {
-        var user = _context.Users.FirstOrDefault(u => u.Email == email);
-        if (user == null)
+        public UserService(ImageGeneratorApiContext context)
         {
-            throw new Exception("User not found");
+            _context = context;
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+        public User CreateUser(string email, string password)
         {
-            throw new Exception("Invalid password");
+            //hash password
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+            var entityEntry = _context.Users.Add(new User("", email, hashedPassword, "User", true, 2));
+            _context.SaveChanges();
+            return entityEntry.Entity;
         }
 
-        return user;
-    }
-
-    public User GetUserByEmailAndGoogleId(string email, string googleId)
-    {
-        var userByEmailAndGoogleId = _context.Users.FirstOrDefault(u => u.Email == email && u.GoogleId == googleId);
-
-        if (userByEmailAndGoogleId == null)
+        public User CreateGoogleUser(string email, string googleId, string name)
         {
-            throw new Exception("User not found");
+            var entityEntry = _context.Users.Add(new User(googleId, email, "", name, true, 2));
+            _context.SaveChanges();
+
+            return entityEntry.Entity;
         }
 
-        return userByEmailAndGoogleId;
+        public bool IsExistingUser(string email)
+        {
+            var isExistingUser = _context.Users.Any(u => u.Email == email);
+
+            return isExistingUser;
+        }
+
+        public User VerifyUser(string email, string password)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+            {
+                throw new Exception("Invalid password");
+            }
+
+            return user;
+        }
+
+        public User GetUserByEmailAndGoogleId(string email, string googleId)
+        {
+            var userByEmailAndGoogleId = _context.Users.FirstOrDefault(u => u.Email == email && u.GoogleId == googleId);
+
+            if (userByEmailAndGoogleId == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            return userByEmailAndGoogleId;
+        }
     }
 }
