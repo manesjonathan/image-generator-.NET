@@ -1,4 +1,5 @@
-﻿using ImageGeneratorApi.Services;
+﻿using Google.Apis.Auth;
+using ImageGeneratorApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ImageGeneratorApi.Controllers;
@@ -43,16 +44,28 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("google-signin")]
-    public OkObjectResult GoogleSignIn([FromBody] GoogleAuthRequest request)
+    public async Task<OkObjectResult> GoogleSignIn([FromBody] GoogleAuthRequest request)
     {
-        if (_userService.IsExistingUser(request.Email))
+        //validate Google token
+        var payload =
+            await GoogleJsonWebSignature.ValidateAsync(request.IdToken,
+                new GoogleJsonWebSignature.ValidationSettings());
+
+        if (payload == null)
         {
-            var user = _userService.GetUserByEmailAndGoogleId(request.Email, request.Id);
-            var token = _tokenService.CreateToken(user);
-            return Ok(new AuthResponse(user.Email, user.Name, token));
+            return new OkObjectResult(BadRequest("Invalid Google token"));
         }
 
-        var newUser = _userService.CreateGoogleUser(request.Email, request.Id, request.Name);
+        if (_userService.IsExistingUser(request.User.Email))
+        {
+            var user = _userService.GetUserByEmailAndGoogleId(request.User.Email,
+                request.User.Id);
+            var token = _tokenService.CreateToken(user);
+            return Ok(new AuthResponse(user.Name, user.Email, token));
+        }
+
+        var newUser = _userService.CreateGoogleUser(request.User.Email, request.User.Id,
+            request.User.Name);
         var accessToken = _tokenService.CreateToken(newUser);
         return Ok(new AuthResponse(newUser.Email, newUser.Name, accessToken));
     }

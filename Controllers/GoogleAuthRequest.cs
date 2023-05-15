@@ -1,17 +1,46 @@
-﻿using Microsoft.Build.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace ImageGeneratorApi.Controllers;
-
-public class GoogleAuthRequest
+namespace ImageGeneratorApi.Controllers
 {
-    public GoogleAuthRequest(string id, string email, string name)
+    public class GoogleAuthRequest
     {
-        Id = id;
-        Email = email;
-        Name = name;
+        public GoogleAuthRequest(UserProperties user, string[] scopes, string idToken)
+        {
+            User = user;
+            Scopes = scopes;
+            IdToken = idToken;
+        }
+
+        [Required] public UserProperties User { get; set; }
+
+        public string[] Scopes { get; set; }
+
+        [Required] public string IdToken { get; set; }
     }
 
-    [Required] public string Id { get; set; }
-    [Required] public string Email { get; set; }
-    [Required] public string Name { get; set; }
+    public class UserProperties
+    {
+        public UserProperties(string id, string name, string email, string photo, string familyName,
+            string givenName)
+        {
+            Id = id;
+            Name = name;
+            Email = email;
+            Photo = photo;
+            FamilyName = familyName;
+            GivenName = givenName;
+        }
+
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Email { get; set; }
+
+        public string Photo { get; set; }
+
+        public string FamilyName { get; set; }
+
+        public string GivenName { get; set; }
+    }
 }

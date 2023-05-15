@@ -16,7 +16,7 @@ namespace ImageGeneratorApi.Services
         {
             //hash password
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-            var entityEntry = _context.Users.Add(new User("", email, hashedPassword, "User", true, 2));
+            var entityEntry = _context.Users.Add(new User("", email, hashedPassword, "User", true, 1));
             _context.SaveChanges();
             return entityEntry.Entity;
         }
