@@ -44,28 +44,18 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("google-signin")]
-    public async Task<OkObjectResult> GoogleSignIn([FromBody] GoogleAuthRequest request)
+    public OkObjectResult GoogleSignIn([FromBody] GoogleAuthRequest request)
     {
-        //validate Google token
-        var payload =
-            await GoogleJsonWebSignature.ValidateAsync(request.IdToken,
-                new GoogleJsonWebSignature.ValidationSettings());
-
-        if (payload == null)
+        if (_userService.IsExistingUser(request.Email))
         {
-            return new OkObjectResult(BadRequest("Invalid Google token"));
-        }
-
-        if (_userService.IsExistingUser(request.User.Email))
-        {
-            var user = _userService.GetUserByEmailAndGoogleId(request.User.Email,
-                request.User.Id);
+            var user = _userService.GetUserByEmailAndGoogleId(request.Email,
+                request.Id);
             var token = _tokenService.CreateToken(user);
             return Ok(new AuthResponse(user.Name, user.Email, token));
         }
 
-        var newUser = _userService.CreateGoogleUser(request.User.Email, request.User.Id,
-            request.User.Name);
+        var newUser = _userService.CreateGoogleUser(request.Email, request.Id,
+            request.Name);
         var accessToken = _tokenService.CreateToken(newUser);
         return Ok(new AuthResponse(newUser.Email, newUser.Name, accessToken));
     }

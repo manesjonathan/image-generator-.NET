@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+namespace ImageGeneratorApi;
+
 internal class Program
 {
     public static void Main(string[] args)
@@ -64,9 +66,7 @@ internal class Program
             });
 
         builder.Services.AddDbContext<ImageGeneratorApiContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseURL") ??
-                              throw new InvalidOperationException(
-                                  "Connection string 'RazorCRUDMovieContext' not found.")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseURL")));
         builder.Services.AddScoped<TokenService, TokenService>();
         builder.Services.AddScoped<UserService>();
         builder.Services
