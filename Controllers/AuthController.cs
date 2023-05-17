@@ -1,5 +1,4 @@
-﻿using Google.Apis.Auth;
-using ImageGeneratorApi.Services;
+﻿using ImageGeneratorApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ImageGeneratorApi.Controllers;
