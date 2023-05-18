@@ -31,8 +31,14 @@ public class CheckoutApiController : Controller
             Email = request.Email,
         };
         var customerService = new CustomerService();
-        var customer = await customerService.CreateAsync(customerOptions);
 
+        // check if existing Stripe customer
+        var stripeList = await customerService.ListAsync(new CustomerListOptions
+        {
+            Email = request.Email
+        });
+
+        var customer = stripeList.Data.FirstOrDefault() ?? await customerService.CreateAsync(customerOptions);
         var ephemeralKeyOptions = new EphemeralKeyCreateOptions
         {
             Customer = customer.Id
@@ -74,7 +80,7 @@ public class CheckoutApiController : Controller
         try
         {
             var stripeEvent = EventUtility.ConstructEvent(json,
-                Request.Headers["Stripe-Signature"], "whsec_fEjz4Ylg6HqORhn1IqOLiN8qlxwJqVCV");
+                Request.Headers["Stripe-Signature"], _config.GetConnectionString("WebhookSecret"));
 
             switch (stripeEvent.Type)
             {
@@ -105,7 +111,6 @@ public class CheckoutApiController : Controller
 
     private OkResult HandlePaymentIntentSucceeded(PaymentIntent paymentIntent)
     {
-        Console.WriteLine(paymentIntent.ReceiptEmail);
         _userService.UpdateUserBucket(paymentIntent.ReceiptEmail, 2);
         return Ok();
     }
