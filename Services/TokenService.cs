@@ -26,8 +26,8 @@ public class TokenService
     private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials,
         DateTime expiration) =>
         new(
-            "apiWithAuthBackend",
-            "apiWithAuthBackend",
+            "imageGeneratorApi",
+            "imageGeneratorApi",
             claims,
             expires: expiration,
             signingCredentials: credentials
@@ -57,10 +57,13 @@ public class TokenService
 
     private SigningCredentials CreateSigningCredentials()
     {
-        var builder = WebApplication.CreateBuilder();
+        IConfiguration config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
         return new SigningCredentials(
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration.GetConnectionString("JWTSecret") ?? string.Empty)
+                Encoding.UTF8.GetBytes(config.GetConnectionString("JWTSecret") ?? string.Empty)
             ),
             SecurityAlgorithms.HmacSha256
         );

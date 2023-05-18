@@ -32,7 +32,6 @@ namespace ImageGeneratorApi.Services
         public bool IsExistingUser(string email)
         {
             var isExistingUser = _context.Users.Any(u => u.Email == email);
-
             return isExistingUser;
         }
 
@@ -63,6 +62,18 @@ namespace ImageGeneratorApi.Services
             }
 
             return userByEmailAndGoogleId;
+        }
+
+        public void UpdateUserBucket(string email, int bucket)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            user.Quota +=  bucket;
+            _context.SaveChanges();
         }
     }
 }

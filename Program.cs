@@ -11,13 +11,12 @@ internal abstract class Program
 {
     public static void Main(string[] args)
     {
-        var webApplicationOptions = new WebApplicationOptions();
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(option =>
         {
-            option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+            option.SwaggerDoc("v1", new OpenApiInfo { Title = "Image Generator API", Version = "v1" });
             option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -53,8 +52,8 @@ internal abstract class Program
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = "apiWithAuthBackend",
-                    ValidAudience = "apiWithAuthBackend",
+                    ValidIssuer = "imageGeneratorApi",
+                    ValidAudience = "imageGeneratorApi",
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(builder.Configuration.GetConnectionString("JWTSecret") ?? string.Empty)
                     ),
