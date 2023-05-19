@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageReference Include="Betalgo.OpenAI" Version="6.8.6" />
         <PackageReference Include="Google.Apis.Auth" Version="1.60.0" />
         <PackageReference Include="Google.Apis.Auth.AspNetCore3" Version="1.60.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />

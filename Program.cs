@@ -1,9 +1,8 @@
-using System.Text;
 using ImageGeneratorApi.Data;
 using ImageGeneratorApi.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenAI.GPT3.Extensions;
 
 namespace ImageGeneratorApi;
 
@@ -41,6 +40,7 @@ internal abstract class Program
                 }
             });
         });
+        /*
         builder.Services
             .AddAuthentication()
             .AddJwtBearer(options =>
@@ -59,11 +59,14 @@ internal abstract class Program
                     ),
                 };
             });
+            */
 
         builder.Services.AddDbContext<ImageGeneratorApiContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseURL")));
         builder.Services.AddScoped<TokenService, TokenService>();
-        builder.Services.AddScoped<UserService>();
+        builder.Services.AddScoped<AuthService>();
+        builder.Services.AddScoped<AiService>();
+        builder.Services.AddOpenAIService();
 
         builder.Services.AddCors(options =>
         {

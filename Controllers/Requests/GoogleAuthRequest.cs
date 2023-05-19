@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ImageGeneratorApi.Controllers
+namespace ImageGeneratorApi.Controllers.Requests
 {
     public class GoogleAuthRequest
     {

@@ -1,4 +1,4 @@
-﻿namespace ImageGeneratorApi.Controllers;
+﻿namespace ImageGeneratorApi.Controllers.Requests;
 
 public class AuthResponse
 {

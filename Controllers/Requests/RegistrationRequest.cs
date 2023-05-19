@@ -1,10 +1,10 @@
 ﻿using Microsoft.Build.Framework;
 
-namespace ImageGeneratorApi.Controllers;
+namespace ImageGeneratorApi.Controllers.Requests;
 
-public class AuthRequest
+public class RegistrationRequest
 {
-    public AuthRequest(string email, string password)
+    public RegistrationRequest(string email, string password)
     {
         Email = email;
         Password = password;

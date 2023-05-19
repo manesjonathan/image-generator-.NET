@@ -3,11 +3,11 @@ using ImageGeneratorApi.Models;
 
 namespace ImageGeneratorApi.Services
 {
-    public class UserService
+    public class AuthService
     {
         private readonly ImageGeneratorApiContext _context;
 
-        public UserService(ImageGeneratorApiContext context)
+        public AuthService(ImageGeneratorApiContext context)
         {
             _context = context;
         }
@@ -72,8 +72,26 @@ namespace ImageGeneratorApi.Services
                 throw new Exception("User not found");
             }
 
-            user.Quota +=  bucket;
+            user.Quota += bucket;
             _context.SaveChanges();
+        }
+
+        public bool ConsumeBucket(string email)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (user.Quota == 0)
+            {
+                return false;
+            }
+
+            user.Quota -= 1;
+            _context.SaveChanges();
+            return true;
         }
     }
 }

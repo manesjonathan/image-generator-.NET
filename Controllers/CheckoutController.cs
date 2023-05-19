@@ -1,18 +1,19 @@
-﻿using ImageGeneratorApi.Services;
+﻿using ImageGeneratorApi.Controllers.Requests;
+using ImageGeneratorApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 
 namespace ImageGeneratorApi.Controllers;
 
 [ApiController]
-public class CheckoutApiController : Controller
+public class CheckoutController : Controller
 {
     private readonly IConfiguration _config;
-    private readonly UserService _userService;
+    private readonly AuthService _authService;
 
-    public CheckoutApiController(UserService userService)
+    public CheckoutController(AuthService authService)
     {
-        _userService = userService;
+        _authService = authService;
         _config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
@@ -111,7 +112,7 @@ public class CheckoutApiController : Controller
 
     private OkResult HandlePaymentIntentSucceeded(PaymentIntent paymentIntent)
     {
-        _userService.UpdateUserBucket(paymentIntent.ReceiptEmail, 2);
+        _authService.UpdateUserBucket(paymentIntent.ReceiptEmail, 2);
         return Ok();
     }
 }

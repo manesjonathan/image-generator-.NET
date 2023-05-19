@@ -1,6 +1,6 @@
 ﻿using Microsoft.Build.Framework;
 
-namespace ImageGeneratorApi.Controllers;
+namespace ImageGeneratorApi.Controllers.Requests;
 
 public class PaymentRequest
 {
