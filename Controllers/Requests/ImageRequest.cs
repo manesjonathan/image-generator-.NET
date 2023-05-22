@@ -4,13 +4,11 @@ namespace ImageGeneratorApi.Controllers.Requests
 {
     public class ImageRequest
     {
-        public ImageRequest(string prompt, string token)
+        public ImageRequest(string prompt)
         {
             Prompt = prompt;
-            Token = token;
         }
 
         [Required] public string Prompt { get; set; }
-        [Required] public string Token { get; set; }
     }
 }

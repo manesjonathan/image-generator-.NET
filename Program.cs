@@ -1,3 +1,4 @@
+using Amazon.S3;
 using ImageGeneratorApi.Data;
 using ImageGeneratorApi.Services;
 using Microsoft.EntityFrameworkCore;
@@ -66,8 +67,10 @@ internal abstract class Program
         builder.Services.AddScoped<TokenService, TokenService>();
         builder.Services.AddScoped<AuthService>();
         builder.Services.AddScoped<AiService>();
+        builder.Services.AddScoped<StorageService>();
         builder.Services.AddOpenAIService();
-
+        builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+        builder.Services.AddAWSService<IAmazonS3>();
         builder.Services.AddCors(options =>
         {
             options.AddPolicy(name: "MyPolicy",

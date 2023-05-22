@@ -23,9 +23,9 @@ public class AiService
         {
             Prompt = prompt,
             N = 2,
-            Size = StaticValues.ImageStatics.Size.Size1024,
+            Size = StaticValues.ImageStatics.Size.Size512,
             ResponseFormat = StaticValues.ImageStatics.ResponseFormat.Url,
-            User = "TestUser"
+            User = "ImageGeneratorUser"
         });
 
         return imageResult.Result.Results.First().Url;
