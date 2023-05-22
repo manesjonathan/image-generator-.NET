@@ -1,5 +1,7 @@
 using ImageGeneratorApi.Controllers.Requests;
 using ImageGeneratorApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ImageGeneratorApi.Controllers
@@ -24,14 +26,11 @@ namespace ImageGeneratorApi.Controllers
 
         [HttpPost]
         [Route("generate")]
-        public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request, [FromHeader] string token)
+        [Authorize(AuthenticationSchemes =
+            JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request)
         {
-            var validateToken = _tokenService.ValidateToken(token);
-            if (!validateToken)
-            {
-                return BadRequest("Invalid token");
-            }
-
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
             var userEmail = _tokenService.GetUserFromToken(token);
 
             var consumeBucket = _authService.ConsumeBucket(userEmail);
@@ -47,14 +46,10 @@ namespace ImageGeneratorApi.Controllers
 
         [HttpGet]
         [Route("images")]
-        public async Task<IActionResult> GetImages([FromHeader] string token)
+        [Authorize(AuthenticationSchemes =
+            JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> GetImages()
         {
-            var validateToken = _tokenService.ValidateToken(token);
-            if (!validateToken)
-            {
-                return BadRequest("Invalid token");
-            }
-
             var images = await _storageService.GetImagesUrlsAsync();
             return Ok(images);
         }

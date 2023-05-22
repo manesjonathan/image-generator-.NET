@@ -1,7 +1,10 @@
+using System.Text;
 using Amazon.S3;
 using ImageGeneratorApi.Data;
 using ImageGeneratorApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OpenAI.GPT3.Extensions;
 
@@ -41,9 +44,13 @@ internal abstract class Program
                 }
             });
         });
-        /*
+
         builder.Services
-            .AddAuthentication()
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters()
@@ -60,7 +67,6 @@ internal abstract class Program
                     ),
                 };
             });
-            */
 
         builder.Services.AddDbContext<ImageGeneratorApiContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseURL")));
@@ -92,12 +98,9 @@ internal abstract class Program
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapControllers();
-
         app.UseCors("MyPolicy");
 
         app.Run();
