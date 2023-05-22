@@ -10,6 +10,7 @@ public class CheckoutController : Controller
 {
     private readonly IConfiguration _config;
     private readonly AuthService _authService;
+    private readonly KeyValuePair<int, int> _optionOne = new(100, 5);
 
     public CheckoutController(AuthService authService)
     {
@@ -50,7 +51,7 @@ public class CheckoutController : Controller
 
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
-            Amount = 100,
+            Amount = _optionOne.Key,
             Currency = "eur",
             Customer = customer.Id,
             ReceiptEmail = customer.Email,
@@ -112,7 +113,7 @@ public class CheckoutController : Controller
 
     private OkResult HandlePaymentIntentSucceeded(PaymentIntent paymentIntent)
     {
-        _authService.UpdateUserBucket(paymentIntent.ReceiptEmail, 2);
+        _authService.UpdateUserBucket(paymentIntent.ReceiptEmail, _optionOne.Value);
         return Ok();
     }
 }
