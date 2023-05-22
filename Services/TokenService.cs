@@ -62,37 +62,6 @@ namespace ImageGeneratorApi.Services
             );
         }
 
-        public bool ValidateToken(string token)
-        {
-            var secret = _config.GetConnectionString("JWTSecret") ?? string.Empty;
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-
-            try
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = key,
-                    ValidateIssuer = false, // Set to true if you want to validate the issuer
-                    ValidateAudience = false, // Set to true if you want to validate the audience
-                    ClockSkew = TimeSpan.Zero // Set to the desired clock skew
-                };
-
-                tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
-
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                var expiration = jwtToken.ValidTo;
-
-                return expiration > DateTime.UtcNow;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         public string GetUserFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

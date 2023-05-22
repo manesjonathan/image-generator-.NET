@@ -111,9 +111,8 @@ public class CheckoutController : Controller
         }
     }
 
-    private OkResult HandlePaymentIntentSucceeded(PaymentIntent paymentIntent)
+    private void HandlePaymentIntentSucceeded(PaymentIntent paymentIntent)
     {
         _authService.UpdateUserBucket(paymentIntent.ReceiptEmail, _optionOne.Value);
-        return Ok();
     }
 }
