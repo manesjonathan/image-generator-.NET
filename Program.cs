@@ -88,6 +88,11 @@ internal abstract class Program
                 });
         });
 
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddHostedService<TunnelService>();
+        }
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
