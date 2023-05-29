@@ -11,7 +11,7 @@ namespace ImageGeneratorApi.Services
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IConfiguration _config;
         private readonly ILogger<TunnelService> _logger;
-        private readonly string _ngrokAuthToken;
+        private readonly string? _ngrokAuthToken;
 
         public TunnelService(
             IServer server,
@@ -24,7 +24,7 @@ namespace ImageGeneratorApi.Services
             _hostApplicationLifetime = hostApplicationLifetime;
             _config = config;
             _logger = logger;
-            _ngrokAuthToken = "2AhoCwCAxw8nGMWFMivF0Ri1kj9_nCEiGchf3Z28TaYkNESf";
+            _ngrokAuthToken = config.GetConnectionString("NgrokAuthToken");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

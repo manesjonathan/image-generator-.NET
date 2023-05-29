@@ -88,10 +88,10 @@ internal abstract class Program
                 });
         });
 
-        if (builder.Environment.IsDevelopment())
+        /*if (builder.Environment.IsDevelopment())
         {
             builder.Services.AddHostedService<TunnelService>();
-        }
+        }*/
 
         var app = builder.Build();
 
